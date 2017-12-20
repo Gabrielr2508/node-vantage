@@ -1,67 +1,35 @@
 var util         = require('util');
 var conversor    = require('./conversor');
 var EventEmitter = require('events').EventEmitter;
-var SerialPort   = require('serialport');
+//var SerialPort   = require('serialport');
+var net = require('net');
 
-/**
- * Parses a raw buffer from the Vantage an emits events depending on the nature of the buffer
- * To see the Vantage protocol:
- * http://www.davisnet.com/support/weather/download/VantageSerialProtocolDocs_v261.pdf
- * @param  {EventEmitter} emitter
- * @param  {Buffer}       buffer
- */
-var parser = function(emitter, buffer) {
-
-    /**
-     * Checks if the buffer is a loop and also the first one
-     * @return {Boolean}
-     */
-    var isFirstLoop = function() {
-        return buffer.length === 100 && buffer.toString('utf8', 1, 4) === 'LOO';
-    };
-
-    /**
-     * Checks if the buffer is a loop
-     * @return {Boolean}
-     */
-    var isLoop = function() {
-        return isFirstLoop(buffer) || buffer.length === 99 && buffer.toString('utf8', 0, 3) === 'LOO';
-    };
-
-    if (isLoop()) {
-        var m = isFirstLoop(buffer) ? 1 : 0;
-        emitter.emit('loop', {
-            barometer:      buffer.readUInt16LE(7+m) / 1000,
-            inTemperature:  buffer.readUInt16LE(9+m) / 10,
-            inHumidity:     buffer.readInt8(11+m),
-            outTemperature: buffer.readUInt16LE(12+m) / 10,
-            windSpeed:      buffer.readInt8(14+m),
-            windDirection:  buffer.readUInt16LE(16+m),
-            outHumidity:    buffer.readInt8(33+m),
-            dayRain:        buffer.readUInt16LE(50+m),
-            rainRate:       buffer.readUInt16LE(41+m),
-            forecast:       buffer.readInt8(89+m),
-            crc:            buffer.readUInt16LE(97+m)
-        });
-    }
-};
+//var emitter = new EventEmitter;
 
 function Driver() {
 
     var driver    = this;
     var connected = false;
     var options   = {
-        port:      '/dev/ttyUSB0',
-        baudrate:  19200,
+        port: 22222,
+        host: '192.168.1.196',
+        // baudrate:  19200,
         loopEvery: 2500,
         units:     'metric'
     };
+    var vantage = new net.Socket();
+    
+    
+    // , function() {
+    //     console.log('Connected');
+    //     // client.write('TEST\n');       
+    // });
 
-    var vantage   = new SerialPort(options.port, {
-        autoOpen: false,
-        baudrate: options.baudrate,
-        parser:   parser
-    });
+    // var vantage   = new SerialPort(options.port, {
+    //     autoOpen: false,
+    //     baudrate: options.baudrate,
+    //     parser:   parser
+    // });
 
     /**
      * Sends a command through the serial port to the station
@@ -71,7 +39,9 @@ function Driver() {
      */
     this.sendCommand = function(command) {
         if (!connected) throw new Exception('Cannot send commands to the Vantage if it is not connected');
-        vantage.write(command + "\n");
+        vantage.write(command + "\n", function(){
+            console.log("loop enviado");
+        });
     };
 
     /**
@@ -99,7 +69,7 @@ function Driver() {
      * Opens the serial connection with the Vantage
      * A connect event is emitted afterwards, with an error as parameter or null
      */
-    vantage.open(function(error) {
+    vantage.connect(options.port, options.host, function(error) {
         if (!error) {
             connected = true;
             if (options.loopEvery) {
@@ -119,6 +89,7 @@ function Driver() {
      */
     vantage.on('loop', function(loop) {
         // @todo CRC check
+        console.log("aqui");
         var data = {
             datetime:       new Date(),
             barometer:      conversor.convert('p', loop.barometer),
@@ -133,6 +104,51 @@ function Driver() {
             forecast:       loop.forecast,
         };
         driver.emit('loop', data);
+    });
+
+    /**
+ * Parses a raw buffer from the Vantage an emits events depending on the nature of the buffer
+ * To see the Vantage protocol:
+ * http://www.davisnet.com/support/weather/download/VantageSerialProtocolDocs_v261.pdf
+ * @param  {EventEmitter} emitter
+ * @param  {Buffer}       buffer
+ */
+    vantage.on('data', function(data) {
+
+        //console.log("aqui no on data");
+        /**
+         * Checks if the buffer is a loop and also the first one
+         * @return {Boolean}
+         */
+        var isFirstLoop = function() {
+            return Buffer.byteLength(data) === 100 && data.toString('utf8', 1, 4) === 'LOO';
+            
+        };
+
+        /**
+         * Checks if the buffer is a loop
+         * @return {Boolean}
+         */
+        var isLoop = function() {
+            return isFirstLoop(data) || Buffer.byteLength(data) === 99 && data.toString('utf8', 0, 3) === 'LOO';
+        };
+
+        if (isLoop()) {
+            var m = isFirstLoop(data) ? 1 : 0;
+            vantage.emit('loop', {
+                barometer:      data.readUInt16LE(7+m) / 1000,
+                inTemperature:  data.readUInt16LE(9+m) / 10,
+                inHumidity:     data.readInt8(11+m),
+                outTemperature: data.readUInt16LE(12+m) / 10,
+                windSpeed:      data.readInt8(14+m),
+                windDirection:  data.readUInt16LE(16+m),
+                outHumidity:    data.readInt8(33+m),
+                dayRain:        data.readUInt16LE(50+m),
+                rainRate:       data.readUInt16LE(41+m),
+                forecast:       data.readInt8(89+m),
+                crc:            data.readUInt16LE(97+m)
+            });
+        }
     });
 
 }
