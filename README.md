@@ -2,10 +2,7 @@
 
 **node-vantage** is a dead simple Davis Vantage driver for Node.js.
 
-## Installation
-```bash
-npm install node-vantage
-```
+
 
 ## How to use
 ```js
@@ -14,17 +11,14 @@ var vantage = new Driver();
 
 vantage.on("connect", function(error) {
 	if (!error) {
-        console.log("Connected to the Vantage");
-        vantage.on("loop", function(loop) {
-            console.log(loop);
-        });
+                console.log("Connected to the Vantage");
+                vantage.on("loop", function(loop) {
+                        console.log(loop);
+                });
 	} else {
-        console.log("Failed connecting to the Vantage: " + error);
+                console.log("Failed connecting to the Vantage: " + error);
 	}
 });
 ```
 
 ## TODO
-- Custom settings
-- Multiple unit systems
-- Push commands (reset, alarms...)
