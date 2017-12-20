@@ -1,7 +1,6 @@
 var util         = require('util');
 var conversor    = require('./conversor');
 var EventEmitter = require('events').EventEmitter;
-//var SerialPort   = require('serialport');
 var net = require('net');
 
 //var emitter = new EventEmitter;
@@ -13,23 +12,10 @@ function Driver() {
     var options   = {
         port: 22222,
         host: '192.168.1.196',
-        // baudrate:  19200,
         loopEvery: 2500,
         units:     'metric'
     };
     var vantage = new net.Socket();
-    
-    
-    // , function() {
-    //     console.log('Connected');
-    //     // client.write('TEST\n');       
-    // });
-
-    // var vantage   = new SerialPort(options.port, {
-    //     autoOpen: false,
-    //     baudrate: options.baudrate,
-    //     parser:   parser
-    // });
 
     /**
      * Sends a command through the serial port to the station
@@ -110,12 +96,9 @@ function Driver() {
  * Parses a raw buffer from the Vantage an emits events depending on the nature of the buffer
  * To see the Vantage protocol:
  * http://www.davisnet.com/support/weather/download/VantageSerialProtocolDocs_v261.pdf
- * @param  {EventEmitter} emitter
- * @param  {Buffer}       buffer
  */
     vantage.on('data', function(data) {
 
-        //console.log("aqui no on data");
         /**
          * Checks if the buffer is a loop and also the first one
          * @return {Boolean}
