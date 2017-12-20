@@ -75,7 +75,6 @@ function Driver() {
      */
     vantage.on('loop', function(loop) {
         // @todo CRC check
-        console.log("aqui");
         var data = {
             datetime:       new Date(),
             barometer:      conversor.convert('p', loop.barometer),

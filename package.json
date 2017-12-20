@@ -1,12 +1,11 @@
 {
     "name": "node-vantage",
     "version": "0.0.5",
-    "description": "A simple Davis Vantage serial driver for Node.js",
+    "description": "A simple Davis Vantage TCP Socket serial driver for Node.js",
     "main": "driver.js",
-    "author": "Miguel Pérez",
+    "author": "Miguel Pérez, Gabriel Gomes",
     "license": "MIT",
     "dependencies": {
-        "serialport":  "4.0.*"
     },
     "tags": [
         "davis",
@@ -15,9 +14,9 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/Kamugo/node-vantage.git"
+        "url": "https://github.com/Gabrielr2508/node-vantage.git"
     },
     "bugs": {
-        "url": "https://github.com/Kamugo/node-vantage/issues"
+        "url": "https://github.com/Gabrielr2508/node-vantage/issues"
     }
 }
