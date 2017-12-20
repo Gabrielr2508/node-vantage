@@ -1,6 +1,6 @@
-# node-vantage
+# node-vantage-tcpSocket
 
-**node-vantage** is a dead simple Davis Vantage driver for Node.js.
+**node-vantage-tcpSocket** is a dead simple Davis Vantage driver for Node.js.
 
 
 
