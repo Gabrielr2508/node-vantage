@@ -2,6 +2,7 @@ var util         = require('util');
 var conversor    = require('./conversor');
 var EventEmitter = require('events').EventEmitter;
 var net = require('net');
+var moment = require('moment');
 
 //var emitter = new EventEmitter;
 
@@ -26,7 +27,7 @@ function Driver() {
     this.sendCommand = function(command) {
         if (!connected) throw new Exception('Cannot send commands to the Vantage if it is not connected');
         vantage.write(command + "\n", function(){
-            console.log("loop enviado");
+            console.log("Loop sended");
         });
     };
 
@@ -58,11 +59,11 @@ function Driver() {
     vantage.connect(options.port, options.host, function(error) {
         if (!error) {
             connected = true;
-            if (options.loopEvery) {
-                setInterval(function() {
+            //if (options.loopEvery) {
+                //setInterval(function() {
                     driver.requestLoop();
-                }, options.loopEvery);
-            }
+                //}, options.loopEvery);
+            //}
             driver.emit('connect', null);
         } else {
             driver.emit('connect', error);
@@ -76,7 +77,7 @@ function Driver() {
     vantage.on('loop', function(loop) {
         // @todo CRC check
         var data = {
-            datetime:       new Date(),
+            datetime:       moment().format(),
             barometer:      conversor.convert('p', loop.barometer),
             inTemperature:  conversor.convert('t', loop.inTemperature),
             inHumidity:     loop.inHumidity,
