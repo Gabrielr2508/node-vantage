@@ -6,6 +6,8 @@
     "author": "Miguel Pérez, Gabriel Gomes",
     "license": "MIT",
     "dependencies": {
+        "node-cron": "^1.2.1",
+        "node-schedule": "^1.2.5"
     },
     "tags": [
         "davis",

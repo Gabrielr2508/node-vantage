@@ -3,6 +3,7 @@ var conversor    = require('./conversor');
 var EventEmitter = require('events').EventEmitter;
 var net = require('net');
 var moment = require('moment');
+var schedule = require('node-schedule');
 
 //var emitter = new EventEmitter;
 
@@ -61,10 +62,10 @@ function Driver() {
             connected = true;
             //if (options.loopEvery) {
                 //setInterval(function() {
-                    driver.requestLoop();
+                driver.requestLoop();
                 //}, options.loopEvery);
             //}
-            driver.emit('connect', null);
+                driver.emit('connect', null);
         } else {
             driver.emit('connect', error);
         }
