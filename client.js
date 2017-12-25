@@ -37,7 +37,8 @@ var vantagePost = function (loopData) {
                 method: 'POST',
                 headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Content-Length': Buffer.byteLength(postData)
+                        'Content-Length': Buffer.byteLength(postData),
+                        'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhbnRhZ2VAdmFudGFnZS5jb20iLCJmdWxsTmFtZSI6IlZhbnRhZ2UgVnVlIFN0YXRpb24iLCJfaWQiOiI1YTQxMzRjODM5ODBjYTAwMTRiYmNmYzQiLCJpYXQiOjE1MTQyMjI4MDJ9.z74vIGaBNqfveAgJFsUX1a7fXf1HK2pVNtQXJUZcFWg'
                 }
         };
 
